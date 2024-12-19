@@ -213,7 +213,7 @@ _check_stream_group = DictType(
         ("name", str),
         ("id", int),
         ("description", str),
-        ("streams", ListType(DictType(default_stream_fields))),
+        ("streams", ListType(int)),
     ]
 )
 
@@ -228,7 +228,7 @@ check_default_stream_groups = make_checker(default_stream_groups_event)
 default_streams_event = event_dict_type(
     required_keys=[
         ("type", Equals("default_streams")),
-        ("default_streams", ListType(DictType(default_stream_fields))),
+        ("default_streams", ListType(int)),
     ]
 )
 check_default_streams = make_checker(default_streams_event)
@@ -944,6 +944,7 @@ def check_realm_update(
     value = event["value"]
 
     if prop in [
+        "moderation_request_channel_id",
         "new_stream_announcements_stream_id",
         "signup_announcements_stream_id",
         "zulip_update_announcements_stream_id",

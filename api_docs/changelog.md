@@ -20,6 +20,32 @@ format used by the Zulip server that they are interacting with.
 
 ## Changes in Zulip 10.0
 
+**Feature level 332**
+
+* [`POST /register`](/api/register-queue): Added
+  `server_min_deactivated_realm_deletion_days` and
+  `server_max_deactivated_realm_deletion_days` fields for the permitted
+  number of days before full data deletion of a deactivated organization
+  on the server.
+* `POST /realm/deactivate`: Added `deletion_delay_days` parameter to
+  support setting when a full data deletion of the deactivated
+  organization may be done.
+
+**Feature level 331**
+
+* [`POST /register`](/api/register-queue), [`POST /events`](/api/get-events),
+  `PATCH /realm`: Added `moderation_request_channel_id` realm setting, which is
+  the ID of the private channel to which moderation requests will be sent.
+
+**Feature level 330**
+
+* [`POST /register`](/api/register-queue), [`GET /events`](/api/get-events):
+  Default channels data only includes channel IDs now instead of full
+  channel data.
+* [`POST /register`](/api/register-queue), [`GET /events`](/api/get-events):
+  Default channel groups data only includes channel IDs now instead of
+  full channel data.
+
 **Feature level 329**
 
 * [`PATCH /realm/user_settings_defaults`](/api/update-realm-user-settings-defaults),

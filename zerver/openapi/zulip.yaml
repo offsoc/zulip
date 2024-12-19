@@ -2007,63 +2007,7 @@ paths:
                                         "name": "group1",
                                         "id": 2,
                                         "description": "New description",
-                                        "streams":
-                                          [
-                                            {
-                                              "name": "Scotland",
-                                              "stream_id": 3,
-                                              "is_archived": false,
-                                              "description": "Located in the United Kingdom",
-                                              "rendered_description": "<p>Located in the United Kingdom</p>",
-                                              "date_created": 1691057093,
-                                              "creator_id": 8,
-                                              "invite_only": false,
-                                              "is_web_public": false,
-                                              "stream_post_policy": 1,
-                                              "history_public_to_subscribers": true,
-                                              "first_message_id": 1,
-                                              "is_recently_active": true,
-                                              "message_retention_days": null,
-                                              "is_announcement_only": false,
-                                              "can_remove_subscribers_group": 2,
-                                            },
-                                            {
-                                              "name": "Denmark",
-                                              "stream_id": 1,
-                                              "is_archived": false,
-                                              "description": "A Scandinavian country",
-                                              "rendered_description": "<p>A Scandinavian country</p>",
-                                              "date_created": 1691057093,
-                                              "creator_id": null,
-                                              "invite_only": false,
-                                              "is_web_public": false,
-                                              "stream_post_policy": 1,
-                                              "is_recently_active": true,
-                                              "history_public_to_subscribers": true,
-                                              "first_message_id": 4,
-                                              "message_retention_days": null,
-                                              "is_announcement_only": false,
-                                              "can_remove_subscribers_group": 2,
-                                            },
-                                            {
-                                              "name": "Verona",
-                                              "stream_id": 5,
-                                              "is_archived": false,
-                                              "description": "A city in Italy",
-                                              "rendered_description": "<p>A city in Italy</p>",
-                                              "date_created": 1691057093,
-                                              "creator_id": 9,
-                                              "invite_only": false,
-                                              "is_web_public": false,
-                                              "stream_post_policy": 1,
-                                              "history_public_to_subscribers": true,
-                                              "first_message_id": 6,
-                                              "is_recently_active": true,
-                                              "message_retention_days": null,
-                                              "is_announcement_only": false,
-                                              "can_remove_subscribers_group": 2,
-                                            },
-                                          ],
+                                        "streams": [3, 1, 5],
                                       },
                                     ],
                                   "id": 0,
@@ -2085,34 +2029,19 @@ paths:
                                 default_streams:
                                   type: array
                                   description: |
-                                    An array of dictionaries where each dictionary
-                                    contains details about a single default channel.
+                                    An array of IDs of all the [default channels](/help/set-default-streams-for-new-users)
+                                    in the organization.
+
+                                    **Changes**: Before Zulip 10.0 (feature level 330),
+                                    we sent array of dictionaries where each dictionary
+                                    contained details about a single default stream for
+                                    the Zulip organization.
                                   items:
-                                    $ref: "#/components/schemas/DefaultChannel"
+                                    type: integer
                               example:
                                 {
                                   "type": "default_streams",
-                                  "default_streams":
-                                    [
-                                      {
-                                        "name": "Scotland",
-                                        "stream_id": 3,
-                                        "is_archived": false,
-                                        "description": "Located in the United Kingdom",
-                                        "rendered_description": "<p>Located in the United Kingdom</p>",
-                                        "date_created": 1691057093,
-                                        "creator_id": 8,
-                                        "invite_only": false,
-                                        "is_web_public": false,
-                                        "stream_post_policy": 1,
-                                        "history_public_to_subscribers": true,
-                                        "first_message_id": 1,
-                                        "is_recently_active": true,
-                                        "message_retention_days": null,
-                                        "is_announcement_only": false,
-                                        "can_remove_subscribers_group": 2,
-                                      },
-                                    ],
+                                  "default_streams": [2, 3],
                                   "id": 0,
                                 }
                             - type: object
@@ -4841,6 +4770,21 @@ paths:
 
                                         **Changes**: Before Zulip 6.0 (feature level 138), no limit was
                                         represented using the special value `0`.
+                                    moderation_request_channel_id:
+                                      type: integer
+                                      description: |
+                                        The ID of the private channel to which messages flagged by users for
+                                        moderation are sent. Moderators can use this channel to review and
+                                        act on reported content.
+
+                                        Will be `-1` if moderation requests are disabled.
+
+                                        Clients should check whether moderation requests are disabled to
+                                        determine whether to present a "report message" feature in their UI
+                                        within a given organization.
+
+                                        **Changes**: New in Zulip 10.0 (feature level 331). Previously,
+                                        no "report message" features existed in Zulip.
                                     move_messages_within_stream_limit_seconds:
                                       type: integer
                                       nullable: true
@@ -14444,6 +14388,30 @@ paths:
 
                           **Changes**: New in Zulip 4.0 (feature level 53). Previously,
                           this property always had a value of 10000.
+                      server_min_deactivated_realm_deletion_days:
+                        type: integer
+                        nullable: true
+                        description: |
+                          Present if `realm` is present in `fetch_event_types`.
+
+                          The minimum permitted number of days before full data deletion
+                          (users, channels, messages, etc.) of a deactivated organization.
+                          If `null`, then a deactivated organization's data can be
+                          deleted immediately.
+
+                          **Changes**: New in Zulip 10.0 (feature level 332)
+                      server_max_deactivated_realm_deletion_days:
+                        type: integer
+                        nullable: true
+                        description: |
+                          Present if `realm` is present in `fetch_event_types`.
+
+                          The maximum permitted number of days before full data deletion
+                          (users, channels, messages, etc.) of a deactivated organization.
+                          If `null`, then a deactivated organization's data can be
+                          retained indefinitely.
+
+                          **Changes**: New in Zulip 10.0 (feature level 332).
                       server_presence_ping_interval_seconds:
                         type: integer
                         description: |
@@ -15104,13 +15072,16 @@ paths:
                       realm_default_streams:
                         type: array
                         items:
-                          $ref: "#/components/schemas/DefaultChannel"
+                          type: integer
                         description: |
                           Present if `default_streams` is present in `fetch_event_types`.
 
-                          An array of dictionaries where each dictionary contains details
-                          about a single [default channel](/help/set-default-channels-for-new-users)
-                          for the Zulip organization.
+                          An array of IDs of all the [default channels](/help/set-default-streams-for-new-users)
+                          in the organization.
+
+                          **Changes**: Before Zulip 10.0 (feature level 330), we sent
+                          array of dictionaries where each dictionary contained details
+                          about a single default stream for the Zulip organization.
                       realm_default_stream_groups:
                         type: array
                         items:
@@ -17637,6 +17608,21 @@ paths:
                           **Changes**: New in Zulip 5.0 (feature level 74). Previously,
                           this was hardcoded to 90 seconds, and clients should use that as a fallback
                           value when interacting with servers where this field is not present.
+                      realm_moderation_request_channel_id:
+                        type: integer
+                        description: |
+                          The ID of the private channel to which messages flagged by users for
+                          moderation are sent. Moderators can use this channel to review and
+                          act on reported content.
+
+                          Will be `-1` if moderation requests are disabled.
+
+                          Clients should check whether moderation requests are disabled to
+                          determine whether to present a "report message" feature in their UI
+                          within a given organization.
+
+                          **Changes**: New in Zulip 10.0 (feature level 331). Previously,
+                          no "report message" feature existed in Zulip.
                       realm_new_stream_announcements_stream_id:
                         type: integer
                         description: |
@@ -18538,7 +18524,7 @@ paths:
                             type: boolean
                           azuread:
                             description: |
-                              Whether the user can authenticate using their Azure Active Directory account.
+                              Whether the user can authenticate using their Microsoft Entra ID account.
                             type: boolean
                           gitlab:
                             description: |
@@ -20204,6 +20190,17 @@ paths:
                         description: |
                           An example JSON response for when invalid combination of channel permission
                           parameters are passed:
+                  - allOf:
+                      - $ref: "#/components/schemas/CodedError"
+                      - example:
+                          {
+                            "code": "BAD_REQUEST",
+                            "msg": "A moderation request channel cannot be public.",
+                            "result": "error",
+                          }
+                        description: |
+                          An example JSON response for when trying to set moderation request channel to
+                          be public:
   /streams/{stream_id}/email_address:
     get:
       operationId: get-stream-email-address
@@ -21928,48 +21925,6 @@ components:
             - is_announcement_only
             - can_remove_subscribers_group
             - stream_weekly_traffic
-    DefaultChannel:
-      allOf:
-        - $ref: "#/components/schemas/BasicChannelBase"
-        - additionalProperties: false
-          properties:
-            stream_id: {}
-            name: {}
-            is_archived: {}
-            description: {}
-            date_created: {}
-            creator_id:
-              nullable: true
-            invite_only: {}
-            rendered_description: {}
-            is_web_public: {}
-            stream_post_policy: {}
-            message_retention_days:
-              nullable: true
-            history_public_to_subscribers: {}
-            first_message_id:
-              nullable: true
-            is_recently_active: {}
-            is_announcement_only: {}
-            can_remove_subscribers_group: {}
-            can_administer_channel_group: {}
-          required:
-            - stream_id
-            - name
-            - is_archived
-            - description
-            - date_created
-            - creator_id
-            - invite_only
-            - rendered_description
-            - is_web_public
-            - stream_post_policy
-            - message_retention_days
-            - history_public_to_subscribers
-            - first_message_id
-            - is_recently_active
-            - is_announcement_only
-            - can_remove_subscribers_group
     BasicChannelBase:
       type: object
       description: |
@@ -23172,10 +23127,13 @@ components:
         streams:
           type: array
           description: |
-            Array containing details about the channels
-            in the default channel group.
+            An array of IDs of all the channels in the default stream group.
+
+            **Changes**: Before Zulip 10.0 (feature level 330), we sent array
+            of dictionaries where each dictionary contained details about a
+            single stream in the default stream group.
           items:
-            $ref: "#/components/schemas/DefaultChannel"
+            type: integer
     EmailAddressVisibility:
       type: integer
       description: |

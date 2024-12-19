@@ -1189,6 +1189,9 @@ textarea.new_message_textarea {
     .compose_control_button {
         /* 22px at 14px/1em */
         font-size: 1.5714em;
+        /* Constrain icon fonts to a perfect
+           box (22px at 14px/1em) */
+        line-height: 1;
         /* Coordinate with the value of
            --compose-formatting-buttons-row-height */
         /* 28px at 22px/1em */
@@ -1234,7 +1237,10 @@ textarea.new_message_textarea {
     .compose_control_menu {
         padding: 0 1px;
         /* 18px at 14px/1em */
-        font-size: 1.2957em;
+        font-size: 1.2857em;
+        /* Constrain icon font to a perfect
+           box (18px at 14px/1em) */
+        line-height: 1;
         /* Coordinate with the value of
            --compose-formatting-buttons-row-height */
         /* 28px at 18px/1em */
@@ -1261,14 +1267,15 @@ textarea.new_message_textarea {
     }
 
     .divider {
-        color: hsl(0deg 0% 75%);
-        /* 20px at 14px/1em */
-        font-size: 1.4286em;
-        margin: 0 3px;
+        margin: 0 5px;
         /* Coordinate with the value of
            --compose-formatting-buttons-row-height */
-        /* 28px at 20px/1em */
-        height: 1.4em;
+        /* 16px at 14px/1em */
+        height: 1.1429em;
+        width: 1.5px;
+        /* Prevent dividers from growing or shrinking. */
+        flex: 0 0 auto;
+        background-color: var(--color-compose-formatting-button-divider);
 
         @media (width < 400px) {
             /* Remove at mobile widths to make more space

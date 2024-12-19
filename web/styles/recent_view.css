@@ -78,6 +78,10 @@
         }
     }
 
+    .white-space-preserve-wrap {
+        word-break: break-word;
+    }
+
     .empty-table-message {
         background-color: var(--color-background);
         padding: 3em 1em;
@@ -181,7 +185,9 @@
         }
 
         &:focus {
-            background-color: hsl(0deg 0% 80%);
+            background-color: var(
+                --color-background-recent-filters-button-focus
+            );
             outline: 0;
         }
 
@@ -190,14 +196,18 @@
             opacity: 0.5;
 
             &:hover {
-                background-color: hsl(0deg 0% 100%);
-                border-color: hsl(0deg 0% 80%);
+                background-color: var(
+                    --color-background-recent-filters-button-disabled
+                );
+                border-color: var(
+                    --color-border-recent-filters-button-disabled
+                );
             }
         }
     }
 
     .button-recent-selected {
-        background-color: hsl(0deg 11% 93%);
+        background-color: var(--color-background-recent-view-selected);
     }
 
     .unread_count {
@@ -316,15 +326,20 @@
     .recent_view_participant_overflow {
         border: 0;
         border-radius: 6px;
-        color: hsl(0deg 0% 100%);
+        color: var(--color-recent-view-participant-overflow-text);
         display: block;
         height: 24px;
         text-align: center;
-        background-color: hsl(0deg 0% 88%);
+        background-color: var(
+            --color-background-recent-view-participant-overflow
+        );
+    }
+
+    .recent_view_participant_avatar {
+        background-color: transparent;
     }
 
     .recent_view_participant_overflow {
-        color: hsl(0deg 0% 0%);
         line-height: 24px;
     }
 
@@ -356,7 +371,7 @@
     }
 
     & thead th {
-        background-color: hsl(0deg 0% 100%);
+        background-color: var(--color-background-recent-view-table-thead-th);
         color: inherit;
         border-top: 1px solid hsl(0deg 0% 0% / 20%) !important;
         border-bottom: 1px solid hsl(0deg 0% 0% / 20%) !important;
@@ -384,7 +399,9 @@
 
         &[data-sort]:hover {
             cursor: pointer;
-            background-color: hsl(0deg 0% 95%);
+            background-color: var(
+                --color-background-recent-view-table-thead-sort-header
+            );
             transition: background-color 100ms ease-in-out;
 
             &:not(.active)::after {
@@ -449,14 +466,6 @@
 
     .recent_topic_name {
         width: 40%;
-
-        & a {
-            word-break: break-word;
-            /* No hyphes for word break since it caused hyphens to appear before
-                the ellipsis `longText-...` which is not desirable. Ellipsis appears due
-                to the line clamp applied below.
-            */
-        }
 
         .line_clamp {
             /* This -webkit-box display property is webkit-specific, but
@@ -527,10 +536,17 @@
             }
         }
 
-        .user_status_icon_wrapper {
-            /* Keep status emoji with usernames,
-               and better vertically align the emoji. */
-            display: inline-flex;
+        .recent-view-dm-group {
+            /* We don't display status emoji in group DMs,
+               so prepare an ordinary inline layout... */
+            .user-status-microlayout {
+                display: inline;
+                white-space: collapse;
+            }
+            /* ...and hide the status emoji. */
+            .status-emoji {
+                display: none;
+            }
         }
     }
 

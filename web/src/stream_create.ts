@@ -215,7 +215,7 @@ $("body").on("click", ".settings-sticky-footer #stream_creation_go_to_subscriber
             is_any_stream_group_widget_pending = true;
             // We are not appending any value here, but instead this is
             // a proxy to invoke the error state for a group widget
-            // that would usually get triggered on clicking enter.
+            // that would usually get triggered on pressing enter.
             widget.appendValue(widget.getCurrentText()!);
             break;
         }
@@ -581,6 +581,19 @@ export function set_up_handlers(): void {
             stream_subscription_error.report_no_subs_to_stream();
             return;
         }
+
+        assert(stream_create_subscribers.pill_widget !== undefined);
+        assert(stream_create_subscribers.pill_widget !== null);
+        if (stream_create_subscribers.pill_widget.is_pending()) {
+            // We are not appending any value here, but instead this is
+            // a proxy to invoke the error state for a group widget
+            // that would usually get triggered on pressing enter.
+            stream_create_subscribers.pill_widget.appendValue(
+                stream_create_subscribers.pill_widget.getCurrentText()!,
+            );
+            return;
+        }
+
         if (!principals.includes(people.my_current_user_id()) && !current_user.is_admin) {
             stream_subscription_error.cant_create_stream_without_subscribing();
             return;

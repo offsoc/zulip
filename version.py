@@ -34,7 +34,7 @@ DESKTOP_WARNING_VERSION = "5.9.3"
 # new level means in api_docs/changelog.md, as well as "**Changes**"
 # entries in the endpoint's documentation in `zulip.yaml`.
 
-API_FEATURE_LEVEL = 329  # Last bumped for adding field web_suggest_update_timezone
+API_FEATURE_LEVEL = 332  # Last bumped for data deletion of deactivated realms.
 
 # Bump the minor PROVISION_VERSION to indicate that folks should provision
 # only when going from an old version of the code to a newer version. Bump
@@ -49,4 +49,4 @@ API_FEATURE_LEVEL = 329  # Last bumped for adding field web_suggest_update_timez
 #   historical commits sharing the same major version, in which case a
 #   minor version bump suffices.
 
-PROVISION_VERSION = (305, 0)  # bumped 2024-11-27 to downgrade @uppy/tus
+PROVISION_VERSION = (305, 1)  # bumped 2024-12-18 to add litellm

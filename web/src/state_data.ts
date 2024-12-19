@@ -2,11 +2,7 @@ import {z} from "zod";
 
 import {server_add_bot_schema} from "./bot_types.ts";
 import {realm_default_settings_schema} from "./realm_user_settings_defaults.ts";
-import {
-    api_stream_subscription_schema,
-    never_subscribed_stream_schema,
-    stream_schema,
-} from "./stream_types.ts";
+import {api_stream_subscription_schema, never_subscribed_stream_schema} from "./stream_types.ts";
 import {group_setting_value_schema} from "./types.ts";
 import {user_settings_schema} from "./user_settings.ts";
 import {user_status_schema} from "./user_status_types.ts";
@@ -402,6 +398,8 @@ export const realm_schema = z.object({
     server_emoji_data_url: z.string(),
     server_inline_image_preview: z.boolean(),
     server_inline_url_embed_preview: z.boolean(),
+    server_max_deactivated_realm_deletion_days: z.nullable(z.number()),
+    server_min_deactivated_realm_deletion_days: z.nullable(z.number()),
     server_jitsi_server_url: z.nullable(z.string()),
     server_name_changes_disabled: z.boolean(),
     server_needs_upgrade: z.boolean(),
@@ -477,7 +475,7 @@ export const state_data_schema = z
                 subscriptions: z.array(api_stream_subscription_schema),
                 unsubscribed: z.array(api_stream_subscription_schema),
                 never_subscribed: z.array(never_subscribed_stream_schema),
-                realm_default_streams: z.array(stream_schema),
+                realm_default_streams: z.array(z.number()),
             })
             .transform((stream_data) => ({stream_data})),
     )

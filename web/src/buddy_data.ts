@@ -1,5 +1,8 @@
+import _ from "lodash";
 import assert from "minimalistic-assert";
 
+import * as blueslip from "./blueslip.ts";
+import {ConversationParticipants} from "./conversation_participants.ts";
 import * as hash_util from "./hash_util.ts";
 import {$t} from "./i18n.ts";
 import * as message_lists from "./message_lists.ts";
@@ -460,12 +463,19 @@ export function get_conversation_participants(): Set<number> {
         return participant_ids_set;
     }
     for (const message of message_lists.current.all_messages()) {
-        if (
-            !people.is_valid_bot_user(message.sender_id) &&
-            people.is_person_active(message.sender_id)
-        ) {
+        if (people.is_displayable_conversation_participant(message.sender_id)) {
             participant_ids_set.add(message.sender_id);
         }
+    }
+    const conversation_participants = new ConversationParticipants(
+        message_lists.current.all_messages(),
+    ).visible();
+    if (!_.isEqual(participant_ids_set, conversation_participants)) {
+        /* istanbul ignore next */
+        blueslip.error("Participants calculations disagree", {
+            participant_ids_set,
+            conversation_participants,
+        });
     }
     return participant_ids_set;
 }

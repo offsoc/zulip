@@ -291,7 +291,9 @@
                 }
 
                 .inbox-left-part {
-                    grid-template: auto / min-content auto min-content min-content;
+                    grid-template:
+                        auto / min-content minmax(0, 1fr)
+                        min-content min-content;
                     grid-template-areas: "match_topic_and_dm_start recipient_info unread_mention_info unread_count";
                 }
 
@@ -413,6 +415,17 @@
                 .inbox-group-or-bot-dm {
                     position: relative;
                     left: -3px;
+
+                    /* We don't display status emoji in group DMs,
+                       so prepare an ordinary inline layout... */
+                    .user-status-microlayout {
+                        display: inline;
+                        white-space: collapse;
+                    }
+                    /* ...and hide the status emoji. */
+                    .status-emoji {
+                        display: none;
+                    }
                 }
 
                 .recipients_info {
@@ -420,7 +433,6 @@
                     flex-wrap: wrap;
                     column-gap: 10px;
                     grid-area: recipient_info;
-                    word-break: break-word;
 
                     .user_block {
                         display: flex;
