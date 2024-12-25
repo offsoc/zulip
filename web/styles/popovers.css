@@ -918,8 +918,8 @@ ul.popover-group-menu-member-list {
     }
 
     .modal__title {
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        /* Grid defined in modal.css */
+        grid-area: heading;
 
         .stream-privacy-type-icon {
             padding-left: 3px;
@@ -974,6 +974,8 @@ ul.popover-group-menu-member-list {
 
     #move_messages_count {
         margin-top: -20px;
+        font-style: italic;
+        opacity: 0.7;
     }
 
     .topic_stream_edit_header {
