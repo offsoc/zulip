@@ -6,11 +6,11 @@ import {FoldDict} from "./fold_dict.ts";
 import * as group_permission_settings from "./group_permission_settings.ts";
 import {$t} from "./i18n.ts";
 import {page_params} from "./page_params.ts";
+import type {UserGroupUpdateEvent} from "./server_event_types.ts";
 import * as settings_config from "./settings_config.ts";
 import type {GroupPermissionSetting, GroupSettingValue, StateData} from "./state_data.ts";
 import {current_user, raw_user_group_schema, realm} from "./state_data.ts";
 import type {UserOrMention} from "./typeahead_helper.ts";
-import type {UserGroupUpdateEvent} from "./types.ts";
 import * as util from "./util.ts";
 
 type UserGroupRaw = z.infer<typeof raw_user_group_schema>;
@@ -158,12 +158,9 @@ export function get_realm_user_groups(include_deactivated = false): UserGroup[] 
     });
 }
 
-// This is only used for testing currently, but would be used in
-// future when we use system groups more and probably show them
-// in the UI as well.
-export function get_all_realm_user_groups(): UserGroup[] {
+export function get_all_realm_user_groups(include_deactivated = false): UserGroup[] {
     const user_groups = [...user_group_by_id_dict.values()].sort((a, b) => a.id - b.id);
-    return user_groups;
+    return user_groups.filter((group) => include_deactivated || !group.deactivated);
 }
 
 export function get_user_groups_allowed_to_mention(): UserGroup[] {
