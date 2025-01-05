@@ -51,7 +51,6 @@ from zerver.lib.push_notifications import (
     UserPushIdentityCompat,
     b64_to_hex,
     get_apns_badge_count,
-    get_apns_badge_count_future,
     get_apns_context,
     get_base_payload,
     get_message_payload_apns,
@@ -4079,8 +4078,7 @@ class TestAPNs(PushNotificationTest):
             self.send_personal_message(self.sender, user_profile, "Content of message")
             for i in range(3)
         ]
-        self.assertEqual(get_apns_badge_count(user_profile), 0)
-        self.assertEqual(get_apns_badge_count_future(user_profile), 3)
+        self.assertEqual(get_apns_badge_count(user_profile), 3)
         # Similarly, test APNs badge count for stream mention.
         stream = self.subscribe(user_profile, "Denmark")
         message_ids += [
@@ -4089,8 +4087,7 @@ class TestAPNs(PushNotificationTest):
             )
             for i in range(2)
         ]
-        self.assertEqual(get_apns_badge_count(user_profile), 0)
-        self.assertEqual(get_apns_badge_count_future(user_profile), 5)
+        self.assertEqual(get_apns_badge_count(user_profile), 5)
 
         num_messages = len(message_ids)
         # Mark the messages as read and test whether
@@ -4098,8 +4095,7 @@ class TestAPNs(PushNotificationTest):
         for i, message_id in enumerate(message_ids):
             with self.captureOnCommitCallbacks(execute=True):
                 do_update_message_flags(user_profile, "add", "read", [message_id])
-            self.assertEqual(get_apns_badge_count(user_profile), 0)
-            self.assertEqual(get_apns_badge_count_future(user_profile), num_messages - i - 1)
+            self.assertEqual(get_apns_badge_count(user_profile), num_messages - i - 1)
 
         mock_push_notifications.assert_called()
 
@@ -4161,7 +4157,7 @@ class TestGetAPNsPayload(PushNotificationTest):
                 "body": message.content,
             },
             "sound": "default",
-            "badge": 0,
+            "badge": 1,
             "custom": {
                 "zulip": {
                     "message_ids": [message.id],
