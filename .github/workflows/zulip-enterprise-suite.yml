@@ -1,4 +1,33 @@
-  build_enterprise_tarball:
+name: Zulip Enterprise Production Suite
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "*.x"]
+    tags: ["*"]
+  pull_request:
+    paths:
+      - .github/workflows/zulip-enterprise-suite.yml
+      - "**/migrations/**"
+      - manage.py
+      - pnpm-lock.yaml
+      - puppet/**
+      - scripts/**
+      - tools/**
+      - uv.lock
+      - web/babel.config.js
+      - web/postcss.config.js
+      - web/third/**
+      - web/webpack.config.ts
+      - zerver/worker/queue_processors.py
+      - zerver/lib/push_notifications.py
+      - zerver/lib/storage.py
+      - zerver/decorator.py
+      - zproject/**
+      - corporate/**
+      - zilencer/**
+
+  build-enterprise-tarball:
     name: Build Zulip Enterprise Release Tarball
     runs-on: ubuntu-latest
 
