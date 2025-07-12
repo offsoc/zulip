@@ -53,8 +53,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3-pip python3-venv libpq-dev npm
 
+      - name: Install Node.js dependencies
+        run: |
+          pnpm install --frozen-lockfile || npm ci
+
       - name: Build production tarball (with enterprise modules)
         run: |
+          export NODE_OPTIONS=--max_old_space_size=4096
           ./tools/provision --build-release-tarball-only
           uv run --no-sync ./tools/build-release-tarball github
 
