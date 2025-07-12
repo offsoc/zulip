@@ -27,7 +27,7 @@ on:
       - corporate/**
       - zilencer/**
 
-  build-enterprise-tarball:
+  build_enterprise_tarball:
     name: Build Zulip Enterprise Release Tarball
     runs-on: ubuntu-latest
 
