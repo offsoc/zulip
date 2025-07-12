@@ -23,6 +23,8 @@ on:
       - zerver/lib/storage.py
       - zerver/decorator.py
       - zproject/**
+      - corporate/**
+      - zilencer/**
   workflow_dispatch:
 
 concurrency:
