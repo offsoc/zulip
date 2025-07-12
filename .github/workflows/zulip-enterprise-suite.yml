@@ -1,0 +1,116 @@
+  build_enterprise_tarball:
+    name: Build Zulip Enterprise Release Tarball
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Zulip source
+        uses: actions/checkout@v4
+
+      - name: Ensure corporate and zilencer modules exist
+        run: |
+          test -d corporate && test -d zilencer && echo "Enterprise modules present."
+
+      - name: Set up Python and Node.js
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv libpq-dev npm
+
+      - name: Build production tarball (with enterprise modules)
+        run: |
+          ./tools/provision --build-release-tarball-only
+          uv run --no-sync ./tools/build-release-tarball docker
+          mv /tmp/tmp.*/zulip-server-docker.tar.gz ./zulip-server-enterprise.tar.gz
+
+      - name: Upload enterprise tarball artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zulip-server-enterprise-tarball
+          path: ./zulip-server-enterprise.tar.gz
+          retention-days: 30
+
+      - name: Upload to GitHub Releases (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./zulip-server-enterprise.tar.gz
+
+  test_install:
+    name: Test Install on Multiple Platforms
+    needs: build_enterprise_tarball
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04, debian-12]
+        db: [postgresql, pgroonga]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Download enterprise tarball artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zulip-server-enterprise-tarball
+          path: .
+
+      - name: Extract tarball
+        run: |
+          mkdir zulip-enterprise
+          tar -xf zulip-server-enterprise.tar.gz -C zulip-enterprise --strip-components=1
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv libpq-dev npm postgresql
+
+      - name: Run Zulip install script
+        run: |
+          cd zulip-enterprise
+          # 这里可根据实际情况传递数据库类型参数
+          ./scripts/setup/install --test-install
+
+      - name: Run basic health checks
+        run: |
+          cd zulip-enterprise
+          ./tools/test-backend --nonfatal-errors
+
+  upgrade_validation:
+    name: Upgrade Validation
+    needs: build_enterprise_tarball
+    strategy:
+      fail-fast: false
+      matrix:
+        from_version: [6.0, 7.0, 8.0, 9.0, 10.0]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download enterprise tarball artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zulip-server-enterprise-tarball
+          path: .
+
+      - name: Download and install previous version
+        run: |
+          # 假设有官方历史 release tarball 下载脚本
+          wget https://www.zulip.org/releases/zulip-server-${{ matrix.from_version }}.tar.gz
+          tar -xf zulip-server-${{ matrix.from_version }}.tar.gz -C old-zulip --strip-components=1
+          cd old-zulip
+          ./scripts/setup/install --test-install
+
+      - name: Upgrade to new enterprise version
+        run: |
+          tar -xf zulip-server-enterprise.tar.gz -C new-zulip --strip-components=1
+          cd new-zulip
+          ./scripts/setup/upgrade --test-upgrade
+
+      - name: Run post-upgrade health checks
+        run: |
+          cd new-zulip
+          ./tools/test-backend --nonfatal-errors 
